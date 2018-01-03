@@ -21,7 +21,7 @@ contents = open("%s/secret.php" % api_folder, "r").read()
 
 print("read secret: %s" % contents)
 
-regex = "db_username *= *[\'\"]([a-zA-Z!\".]*)[\'\"][a-zA-Z; \n\t=]*db_password *= *[\'\"]([a-zA-Z0-9]*)[\'\"]"
+regex = "db_username *= *[\'\"]([a-zA-Z!\".]*)[\'\"][a-zA-Z; \n\t\r=]*db_password *= *[\'\"]([a-zA-Z0-9]*)[\'\"]"
 
 result = re.search(regex, contents)
 
