@@ -19,7 +19,7 @@ clientToken = args.discordClientToken
 
 contents = open("%s/secret.php" % api_folder, "r").read()
 
-regex = "db_username *= *\'([a-zA-Z!\".]*)\'[a-zA-Z; \n=]*db_password *= *\'([a-zA-Z0-9]*)\'"
+regex = "db_username *= *[\'\"]([a-zA-Z!\".]*)[\'\"][a-zA-Z; \n=]*db_password *= *[\'\"]([a-zA-Z0-9]*)[\'\"]"
 
 result = re.search(regex, contents)
 
@@ -38,7 +38,7 @@ async def on_ready():
     talk_channel = 0
     for channel in client.get_all_channels():
     	print("Name: %s, id: %s" % (channel.name, channel.id))
-    	if channel.name == "botpreik":
+    	if channel.name == "syslog":
     		talk_channel = channel
     		break
     await client.send_message(talk_channel, 'Discord bot is ON')
