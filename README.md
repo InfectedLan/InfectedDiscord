@@ -6,5 +6,6 @@ Discord bot for whining to the tech channel
 
 ```
 virtualenv .
-pip install discord.py
+Scripts/activate.bat # If windows
+pip install discord.py MySQL-python
 ```

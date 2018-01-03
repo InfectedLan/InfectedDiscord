@@ -6,7 +6,7 @@ import discord
 import sys
 
 parser = argparse.ArgumentParser(description="Whines to the discord server")
-parser.add_argument("apiFolder", metavar="a", type=str, help="The api folder")
+parser.add_argument("apiFolder", metavar="api", type=str, help="The api folder")
 parser.add_argument("discordClientToken", metavar="token", type=str, help="The discord bot client token")
 
 args = parser.parse_args()
@@ -41,7 +41,7 @@ async def on_ready():
     	if channel.name == "botpreik":
     		talk_channel = channel
     		break
-    await client.send_message(talk_channel, 'Hei hei her blir det bråk')
+    await client.send_message(talk_channel, 'Discord bot is ON')
     sys.exit()
 
 client.run(clientToken)
