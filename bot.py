@@ -19,7 +19,7 @@ clientToken = args.discordClientToken
 
 contents = open("%s/secret.php" % api_folder, "r").read()
 
-regex = "db_username = \"([a-zA-Z!\".]*)\"[a-zA-Z; ]*db_password= \"([a-zA-Z0-9]*)\""
+regex = "db_username *= *\'([a-zA-Z!\".]*)\'[a-zA-Z; \n=]*db_password *= *\'([a-zA-Z0-9]*)\'"
 
 result = re.search(regex, contents)
 
