@@ -4,29 +4,16 @@ import argparse
 import re
 import discord
 import sys
+import time
 
-parser = argparse.ArgumentParser(description="Whines to the discord server")
-parser.add_argument("apiFolder", metavar="api", type=str, help="The api folder")
+parser = argparse.ArgumentParser(description="Complains about errors to the discord server.")
+parser.add_argument("errorFile", metavar="errorFile", type=str, help="The file to follow.")
 parser.add_argument("discordClientToken", metavar="token", type=str, help="The discord bot client token")
 
 args = parser.parse_args()
 
-api_folder = args.apiFolder
+errorFile = args.errorFile
 clientToken = args.discordClientToken
-
-
-# Fetch db username and password
-
-contents = open("%s/secret.php" % api_folder, "r").read()
-
-print("read secret: %s" % contents)
-
-regex = "db_username *= *[\'\"]([a-zA-Z!\".]*)[\'\"][a-zA-Z; \n\t\r=]*db_password *= *[\'\"]([a-zA-Z0-9]*)[\'\"]"
-
-result = re.search(regex, contents)
-
-print("Found username %s and password %s" % (result.group(1), result.group(2)))
-
 
 # Fire up discord bot
 client = discord.Client()
@@ -40,10 +27,22 @@ async def on_ready():
     talk_channel = 0
     for channel in client.get_all_channels():
     	print("Name: %s, id: %s" % (channel.name, channel.id))
-    	if channel.name == "syslog":
+    	if channel.name == "errors":
     		talk_channel = channel
     		break
     await client.send_message(talk_channel, 'Discord bot is ON')
-    sys.exit()
+    # Follow the file
+    with open(errorFile) as file_:
+            # Go to the end of file
+            file_.seek(0,2)
+            while True:
+                curr_position = file_.tell()
+                line = file_.readline()
+                if not line:
+                    file_.seek(curr_position)
+                    time.sleep(0.1)
+                else:
+                    await client.send_message(talk_channel, 'New error message: \n```\n%s\n```' % line)
+                    #print(line)
 
 client.run(clientToken)
