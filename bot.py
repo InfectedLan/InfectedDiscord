@@ -184,7 +184,7 @@ def sendNotification(errMsg):
 
             warn_result = re.match(warn_regex, body)
 
-            regressionData = handleRegression(error_result.group(2), error_result.group(3))
+            regressionData = handleRegression(warn_result.group(2), warn_result.group(3))
 
             payload = {
                 "username": "Loggine",
@@ -249,11 +249,12 @@ def sendNotification(errMsg):
                 }]
             }
         elif entry_type=="php7:notice":
+            return
             notice_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9 ]*)"
 
             notice_result = re.match(notice_regex, body)
 
-            regressionData = handleRegression(error_result.group(2), error_result.group(3))
+            regressionData = handleRegression(notice_result.group(2), notice_result.group(3))
 
             payload = {
                 "username": "Loggine",
