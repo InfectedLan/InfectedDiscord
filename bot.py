@@ -231,7 +231,6 @@ def sendNotification(errMsg):
     print("Sending to %s" % webtoken)
 
     r = requests.post(webtoken, data=json.dumps(payload), headers={"Content-Type": "application/json"})
-    time.sleep(0.5)
 
 print("Error log watcher hello world")
 
