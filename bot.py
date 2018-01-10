@@ -24,8 +24,11 @@ def sendNotification(errMsg):
     # Apache-finding regex
     # \[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[client ([a-zA-Z0-9: .]*)\] (.*)
 
+    # Error regex
+    # ([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\nStack trace:\\n([a-zA-Z0-9#!\/ .,_\-():\'{}<>]*\\n)*([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)
     apache_regex = "\[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[client ([a-zA-Z0-9: .]*)\] (.*)"
     #regex = "\[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[client ([a-zA-Z0-9: .]*)\] ([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#\/ ._():\\'{}]*\\\\n)* *thrown in ([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
+
 
     apache = re.match(apache_regex, errMsg)
 
@@ -36,7 +39,7 @@ def sendNotification(errMsg):
         body = apache.group(5)
 
         if entry_type == "php7:error":
-            error_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#\/ ._():\\'{}]*\\\\n)* *thrown in ([a-zA-Z0-9\/._ ]*), referer: (.*)"
+            error_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#!\/ .,_\-():\\'{}<>]*\\\\n)*([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
 
             error_result = re.match(error_regex, body)
 
