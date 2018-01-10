@@ -70,6 +70,11 @@ def sendNotification(errMsg):
                         "name": "File",
                         "value": result.group(7),
                         "inline": True
+                    },
+                    {
+                        "name": "URL",
+                        "value": result.group(result.groups),
+                        "inline": True
                     }
                 ]#,
                 #description": "```%s```" % errMsg
