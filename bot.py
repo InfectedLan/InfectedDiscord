@@ -111,7 +111,6 @@ def sendNotification(errMsg):
             entry_type = apache.group(2)
             client = apache.group(4)
             body = apache.group(5)
-
             if entry_type == "php7:error":
                 error_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#!\/ .,_\-():\\'{}<>\\\\]*\\\\n)*([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
 
@@ -269,14 +268,16 @@ def sendNotification(errMsg):
                         "description": "```%s```" % errMsg
                     }]
                 }
-        except Exception:
+            
+        except:
             payload = {
-            "username": "Loggine",
-            "tts": False,
-            "embeds": [{
-                "title": "An error occurred handling the following error",
-                "description": "```%s```" % errMsg
-            }]
+                "username": "Loggine",
+                "tts": False,
+                "embeds": [{
+                    "title": "An error occurred handling the following error",
+                    "description": "```%s```" % errMsg
+                }]
+            }
     # Fallback
     else:
         payload = {
