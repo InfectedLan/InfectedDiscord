@@ -101,6 +101,68 @@ def sendNotification(errMsg):
                     #description": "```%s```" % errMsg
                 }]
             }
+        elif entry_type=="php7:warn":
+            warn_regex = "([a-zA-Z ]*): *(.*)in ([\/a-zA-Z._:0-9 ]*)"
+
+            warn_result = re.match(warn_regex, body)
+
+            payload = {
+                "username": "Loggine",
+                # "avatar_url": "",
+                "tts": False,
+                "embeds": [{
+                    "title": ":warning:New log event:warning:",
+                    #"url": entry["url"],
+                    # "timestamp": "",
+                    # "color": "",
+                    #"footer": {},
+                    #"image": {
+                    #    "url": entry["imageUrl"],
+                    #},
+                    #"thumbnail": {
+                    #    "url": entry["imageUrl"],
+                    #},
+                    #"author": {
+                    #    "name": data["sellerName"],
+                    #    # Maybe use gravatar when default avatar?
+                    #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
+                    #    # "proxy_icon_url": "",
+                    #},
+                    "fields": [
+                        {
+                            "name": "Date",
+                            "value": time,
+                            "inline": True
+                        },
+                        {
+                            "name": "Client",
+                            "value": client,
+                            "inline": True
+                        },
+                        {
+                            "name": "Type",
+                            "value": warn_result.group(1),
+                            "inline": True
+                        },
+                        {
+                            "name": "Exception",
+                            "value": warn_result.group(2),
+                            "inline": True
+                        },
+                        {
+                            "name": "File",
+                            "value": warn_result.group(3),
+                            "inline": True
+                        }#,
+                        #{
+                        #    "name": "URL",
+                        #    "value": error_result.group("referer"),
+                        #    "inline": True
+                        #}
+                    ]#,
+                    #description": "```%s```" % errMsg
+                }]
+            }
         elif entry_type=="php7:notice":
             notice_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9 ]*)"
 
