@@ -106,25 +106,228 @@ def sendNotification(errMsg):
     apache = re.match(apache_regex, errMsg)
 
     if apache:
-        time = apache.group(1)
-        entry_type = apache.group(2)
-        client = apache.group(4)
-        body = apache.group(5)
+        try:
+            time = apache.group(1)
+            entry_type = apache.group(2)
+            client = apache.group(4)
+            body = apache.group(5)
 
-        if entry_type == "php7:error":
-            error_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#!\/ .,_\-():\\'{}<>\\\\]*\\\\n)*([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
+            if entry_type == "php7:error":
+                error_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#!\/ .,_\-():\\'{}<>\\\\]*\\\\n)*([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
 
-            error_result = re.match(error_regex, body)
+                error_result = re.match(error_regex, body)
 
-            regressionData = handleRegression(error_result.group(2), error_result.group(3))
+                regressionData = handleRegression(error_result.group(2), error_result.group(3))
 
-            payload = {
+                payload = {
+                    "username": "Loggine",
+                    "icon_emoji": ":warning:",
+                    # "avatar_url": "",
+                    "tts": False,
+                    "embeds": [{
+                        "title": ":rotating_light:New log event:rotating_light:",
+                        #"url": entry["url"],
+                        # "timestamp": "",
+                        # "color": "",
+                        #"footer": {},
+                        #"image": {
+                        #    "url": entry["imageUrl"],
+                        #},
+                        #"thumbnail": {
+                        #    "url": entry["imageUrl"],
+                        #},
+                        #"author": {
+                        #    "name": data["sellerName"],
+                        #    # Maybe use gravatar when default avatar?
+                        #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
+                        #    # "proxy_icon_url": "",
+                        #},
+                        "fields": [
+                            {
+                                "name": "Date",
+                                "value": time,
+                                "inline": True
+                            },
+                            {
+                                "name": "Client",
+                                "value": client,
+                                "inline": True
+                            },
+                            {
+                                "name": "Type",
+                                "value": error_result.group(1),
+                                "inline": True
+                            },
+                            {
+                                "name": "Exception",
+                                "value": error_result.group(2),
+                                "inline": True
+                            },
+                            {
+                                "name": "File",
+                                "value": error_result.group(3),
+                                "inline": True
+                            },
+                            {
+                                "name": "URL",
+                                "value": error_result.group("referer"),
+                                "inline": True
+                            },
+                            {
+                                "name": "Seen before?",
+                                "value": regressionData[3],
+                                "inline": True
+                            }
+                        ]#,
+                        #description": "```%s```" % errMsg
+                    }]
+                }
+            elif entry_type=="php7:warn":
+                warn_regex = "([a-zA-Z ]*): *(.*)in ([\/a-zA-Z._:0-9 ]*)"
+
+                warn_result = re.match(warn_regex, body)
+
+                regressionData = handleRegression(warn_result.group(2), warn_result.group(3))
+
+                payload = {
+                    "username": "Loggine",
+                    # "avatar_url": "",
+                    "tts": False,
+                    "embeds": [{
+                        "title": ":warning:New log event:warning:",
+                        #"url": entry["url"],
+                        # "timestamp": "",
+                        # "color": "",
+                        #"footer": {},
+                        #"image": {
+                        #    "url": entry["imageUrl"],
+                        #},
+                        #"thumbnail": {
+                        #    "url": entry["imageUrl"],
+                        #},
+                        #"author": {
+                        #    "name": data["sellerName"],
+                        #    # Maybe use gravatar when default avatar?
+                        #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
+                        #    # "proxy_icon_url": "",
+                        #},
+                        "fields": [
+                            {
+                                "name": "Date",
+                                "value": time,
+                                "inline": True
+                            },
+                            {
+                                "name": "Client",
+                                "value": client,
+                                "inline": True
+                            },
+                            {
+                                "name": "Type",
+                                "value": warn_result.group(1),
+                                "inline": True
+                            },
+                            {
+                                "name": "Exception",
+                                "value": warn_result.group(2),
+                                "inline": True
+                            },
+                            {
+                                "name": "File",
+                                "value": warn_result.group(3),
+                                "inline": True
+                            },
+                            {
+                                "name": "Seen before?",
+                                "value": regressionData[3],
+                                "inline": True
+                            }#,
+                            #{
+                            #    "name": "URL",
+                            #    "value": error_result.group("referer"),
+                            #    "inline": True
+                            #}
+                        ]#,
+                        #description": "```%s```" % errMsg
+                    }]
+                }
+            elif entry_type=="php7:notice":
+                return
+                notice_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9 ]*)"
+
+                notice_result = re.match(notice_regex, body)
+
+                regressionData = handleRegression(notice_result.group(2), notice_result.group(3))
+
+                payload = {
+                    "username": "Loggine",
+                    # "avatar_url": "",
+                    "tts": False,
+                    "embeds": [{
+                        "title": ":loudspeaker:New log event:loudspeaker:",
+                        #"url": entry["url"],
+                        # "timestamp": "",
+                        # "color": "",
+                        #"footer": {},
+                        #"image": {
+                        #    "url": entry["imageUrl"],
+                        #},
+                        #"thumbnail": {
+                        #    "url": entry["imageUrl"],
+                        #},
+                        #"author": {
+                        #    "name": data["sellerName"],
+                        #    # Maybe use gravatar when default avatar?
+                        #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
+                        #    # "proxy_icon_url": "",
+                        #},
+                        "fields": [
+                            {
+                                "name": "Date",
+                                "value": time,
+                                "inline": True
+                            },
+                            {
+                                "name": "Client",
+                                "value": client,
+                                "inline": True
+                            },
+                            {
+                                "name": "Type",
+                                "value": notice_result.group(1),
+                                "inline": True
+                            },
+                            {
+                                "name": "Exception",
+                                "value": notice_result.group(2),
+                                "inline": True
+                            },
+                            {
+                                "name": "File",
+                                "value": notice_result.group(3),
+                                "inline": True
+                            },
+                            {
+                                "name": "Seen before?",
+                                "value": regressionData[3],
+                                "inline": True
+                            }#,
+                            #{
+                            #    "name": "URL",
+                            #    "value": error_result.group("referer"),
+                            #    "inline": True
+                            #}
+                        ]#,
+                        #description": "```%s```" % errMsg
+                    }]
+                }
+            except Exception:
+                payload = {
                 "username": "Loggine",
-                "icon_emoji": ":warning:",
                 # "avatar_url": "",
                 "tts": False,
                 "embeds": [{
-                    "title": ":rotating_light:New log event:rotating_light:",
+                    "title": "An error occurred handling the following error",
                     #"url": entry["url"],
                     # "timestamp": "",
                     # "color": "",
@@ -141,186 +344,44 @@ def sendNotification(errMsg):
                     #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
                     #    # "proxy_icon_url": "",
                     #},
-                    "fields": [
-                        {
-                            "name": "Date",
-                            "value": time,
-                            "inline": True
-                        },
-                        {
-                            "name": "Client",
-                            "value": client,
-                            "inline": True
-                        },
-                        {
-                            "name": "Type",
-                            "value": error_result.group(1),
-                            "inline": True
-                        },
-                        {
-                            "name": "Exception",
-                            "value": error_result.group(2),
-                            "inline": True
-                        },
-                        {
-                            "name": "File",
-                            "value": error_result.group(3),
-                            "inline": True
-                        },
-                        {
-                            "name": "URL",
-                            "value": error_result.group("referer"),
-                            "inline": True
-                        },
-                        {
-                            "name": "Seen before?",
-                            "value": regressionData[3],
-                            "inline": True
-                        }
-                    ]#,
-                    #description": "```%s```" % errMsg
+                    #"fields": [
+                    #    {
+                    #        "name": "Time Remaining",
+                    #        "value": data["daysLeft"],
+                    #        "inline": True
+                    #    },
+                    #    {
+                    #        "name": "Closing Time",
+                    #        "value": data["endTime"],
+                    #        "inline": True
+                    #    },
+                    #    {
+                    #        "name": "Early Finish",
+                    #        "value": data["earlyTermination"],
+                    #        "inline": True
+                    #    },
+                    #    {
+                    #        "name": "Automatic Extension",
+                    #        "value": data["autoExtend"],
+                    #        "inline": True
+                    #    },
+                    #    {
+                    #        "name": "Current Bid",
+                    #        "value": data["bidStr"],
+                    #        "inline": True
+                    #    },
+                    #    {
+                    #        "name": "Buy-out Price",
+                    #        "value": data["buyoutStr"],
+                    #        "inline": True
+                    #    },
+                    #    {
+                    #        "name": "Search term",
+                    #        "value": ", ".join(entry["keywordList"])
+                    #    }
+                    #],
+                    "description": "```%s```" % errMsg
                 }]
-            }
-        elif entry_type=="php7:warn":
-            warn_regex = "([a-zA-Z ]*): *(.*)in ([\/a-zA-Z._:0-9 ]*)"
-
-            warn_result = re.match(warn_regex, body)
-
-            regressionData = handleRegression(warn_result.group(2), warn_result.group(3))
-
-            payload = {
-                "username": "Loggine",
-                # "avatar_url": "",
-                "tts": False,
-                "embeds": [{
-                    "title": ":warning:New log event:warning:",
-                    #"url": entry["url"],
-                    # "timestamp": "",
-                    # "color": "",
-                    #"footer": {},
-                    #"image": {
-                    #    "url": entry["imageUrl"],
-                    #},
-                    #"thumbnail": {
-                    #    "url": entry["imageUrl"],
-                    #},
-                    #"author": {
-                    #    "name": data["sellerName"],
-                    #    # Maybe use gravatar when default avatar?
-                    #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
-                    #    # "proxy_icon_url": "",
-                    #},
-                    "fields": [
-                        {
-                            "name": "Date",
-                            "value": time,
-                            "inline": True
-                        },
-                        {
-                            "name": "Client",
-                            "value": client,
-                            "inline": True
-                        },
-                        {
-                            "name": "Type",
-                            "value": warn_result.group(1),
-                            "inline": True
-                        },
-                        {
-                            "name": "Exception",
-                            "value": warn_result.group(2),
-                            "inline": True
-                        },
-                        {
-                            "name": "File",
-                            "value": warn_result.group(3),
-                            "inline": True
-                        },
-                        {
-                            "name": "Seen before?",
-                            "value": regressionData[3],
-                            "inline": True
-                        }#,
-                        #{
-                        #    "name": "URL",
-                        #    "value": error_result.group("referer"),
-                        #    "inline": True
-                        #}
-                    ]#,
-                    #description": "```%s```" % errMsg
-                }]
-            }
-        elif entry_type=="php7:notice":
-            return
-            notice_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9 ]*)"
-
-            notice_result = re.match(notice_regex, body)
-
-            regressionData = handleRegression(notice_result.group(2), notice_result.group(3))
-
-            payload = {
-                "username": "Loggine",
-                # "avatar_url": "",
-                "tts": False,
-                "embeds": [{
-                    "title": ":loudspeaker:New log event:loudspeaker:",
-                    #"url": entry["url"],
-                    # "timestamp": "",
-                    # "color": "",
-                    #"footer": {},
-                    #"image": {
-                    #    "url": entry["imageUrl"],
-                    #},
-                    #"thumbnail": {
-                    #    "url": entry["imageUrl"],
-                    #},
-                    #"author": {
-                    #    "name": data["sellerName"],
-                    #    # Maybe use gravatar when default avatar?
-                    #    "icon_url": "https://s.yimg.jp/images/serp/as/ic_prof_default.png",
-                    #    # "proxy_icon_url": "",
-                    #},
-                    "fields": [
-                        {
-                            "name": "Date",
-                            "value": time,
-                            "inline": True
-                        },
-                        {
-                            "name": "Client",
-                            "value": client,
-                            "inline": True
-                        },
-                        {
-                            "name": "Type",
-                            "value": notice_result.group(1),
-                            "inline": True
-                        },
-                        {
-                            "name": "Exception",
-                            "value": notice_result.group(2),
-                            "inline": True
-                        },
-                        {
-                            "name": "File",
-                            "value": notice_result.group(3),
-                            "inline": True
-                        },
-                        {
-                            "name": "Seen before?",
-                            "value": regressionData[3],
-                            "inline": True
-                        }#,
-                        #{
-                        #    "name": "URL",
-                        #    "value": error_result.group("referer"),
-                        #    "inline": True
-                        #}
-                    ]#,
-                    #description": "```%s```" % errMsg
-                }]
-            }
-
         # Fallback
         else:
             payload = {
