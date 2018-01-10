@@ -80,7 +80,7 @@ def handleRegression(errorMsg, file):
         else:
             regressionString = "This error has been observed before"
     else:
-        regressionString = "Unknown regression state"
+        regressionString = "Unknown regression state(%s, %s, %s, %s)" % (seenFileBefore, isNewMessage, newFileLine, fileChangedSinceLastTime)
 
     return (isNewMessage, newFileLine, fileChangedSinceLastTime, regressionString)
 
