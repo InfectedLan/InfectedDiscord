@@ -18,7 +18,7 @@ def sendNotification(errMsg):
 
     print("Got message %s" % errMsg)
 
-    regex = "\[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[client ([a-zA-Z0-9: .]*)\] ([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#\/ ._():\\'{}]*\\\\n)* *thrown in ([a-zA-Z0-9\/._ ]*), referer: (.*)"
+    regex = "\[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[([a-zA-Z0-9: .]*)\] \[client ([a-zA-Z0-9: .]*)\] ([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#\/ ._():\\'{}]*\\\\n)* *thrown in ([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
 
     result = re.match(regex, errMsg)
 
@@ -73,7 +73,7 @@ def sendNotification(errMsg):
                     },
                     {
                         "name": "URL",
-                        "value": result.group(result.groups),
+                        "value": result.group("referer"),
                         "inline": True
                     }
                 ]#,
