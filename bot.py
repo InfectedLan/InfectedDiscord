@@ -100,7 +100,7 @@ def sendNotification(errMsg):
                     #description": "```%s```" % errMsg
                 }]
             }
-        else if entry_type=="php7:notice":
+        elif entry_type=="php7:notice":
             notice_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9 ]*)"
 
             notice_result = re.match(notice_regex, body)
