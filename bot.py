@@ -45,6 +45,7 @@ def sendNotification(errMsg):
 
             payload = {
                 "username": "Loggine",
+                "icon_emoji": ":warning:",
                 # "avatar_url": "",
                 "tts": False,
                 "embeds": [{
