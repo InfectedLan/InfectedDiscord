@@ -3,6 +3,7 @@
 import argparse
 import requests, json
 import time
+import hashlib
 import re
 
 parser = argparse.ArgumentParser(description="Complains about errors to the discord server.")
@@ -13,6 +14,76 @@ args = parser.parse_args()
 
 errorFile = args.errorFile
 webtoken = args.webtokenUrl
+
+try:
+    regressionDb = json.loads(open("regressiondb.json", "r").read())
+    print("Loaded %s known errors" % len(regressionDb))
+except Exception:
+    print("Failed to load local db!")
+    regressionDb = {}
+
+def saveRegressionDb():
+    with open("regressiondb.json", "w") as f:
+        json.dump(regressionDb, f)
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+def handleRegression(errorMsg, file):
+
+    fileLineExtractRegex = "(.*) on line (.*)"
+
+    fileRegexResult = re.match(fileLineExtractRegex, file)
+
+    fileName = fileRegexResult.group(1)
+    fileLine = fileRegexResult.group(2)
+
+    seenFileBefore = True
+
+    if not fileName in regressionDb:
+        regressionDb[fileName] = {}
+        seenFileBefore = False
+
+    isNewMessage = False
+
+    if not errorMsg in regressionDb[fileName]:
+        regressionDb[fileName][errorMsg] = {}
+        isNewMessage = True
+
+    newFileLine = False
+
+    if not fileLine in regressionDb[fileName][errorMsg]:
+        newFileLine = True
+        regressionDb[fileName][errorMsg][fileLine] = []
+
+    hashed_value = md5(fileName)
+
+    fileChangedSinceLastTime = False
+
+    if not hashed_value in regressionDb[fileName][errorMsg][fileLine]:
+        fileChangedSinceLastTime = True
+        regressionDb[fileName][errorMsg][fileLine].append(hashed_value)
+
+    saveRegressionDb()
+
+    if fileChangedSinceLastTime and not newFileLine and not isNewMessage:
+        regressionString = "The file has changed since last time, but the error remains"
+    elif not seenFileBefore:
+        regressionString = "This is a new error in a new file"
+    elif not isNewMessage:
+        if newFileLine:
+            regressionString = "This error has been observed before, but on another line"
+        else:
+            regressionString = "This error has been observed before"
+    else:
+        regressionString = "Unknown regression state"
+
+    return (isNewMessage, newFileLine, fileChangedSinceLastTime, regressionString)
+
 
 def sendNotification(errMsg):
 
@@ -42,6 +113,8 @@ def sendNotification(errMsg):
             error_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9]*)\\\\nStack trace:\\\\n([a-zA-Z0-9#!\/ .,_\-():\\'{}<>]*\\\\n)*([a-zA-Z0-9\/._ ]*), referer: (?P<referer>.*)"
 
             error_result = re.match(error_regex, body)
+
+            regressionData = handleRegression(error_result.group(2), error_result.group(3))
 
             payload = {
                 "username": "Loggine",
@@ -96,6 +169,11 @@ def sendNotification(errMsg):
                             "name": "URL",
                             "value": error_result.group("referer"),
                             "inline": True
+                        },
+                        {
+                            "name": "Seen before?",
+                            "value": regressionData[3],
+                            "inline": True
                         }
                     ]#,
                     #description": "```%s```" % errMsg
@@ -105,6 +183,8 @@ def sendNotification(errMsg):
             warn_regex = "([a-zA-Z ]*): *(.*)in ([\/a-zA-Z._:0-9 ]*)"
 
             warn_result = re.match(warn_regex, body)
+
+            regressionData = handleRegression(error_result.group(2), error_result.group(3))
 
             payload = {
                 "username": "Loggine",
@@ -153,6 +233,11 @@ def sendNotification(errMsg):
                             "name": "File",
                             "value": warn_result.group(3),
                             "inline": True
+                        },
+                        {
+                            "name": "Seen before?",
+                            "value": regressionData[3],
+                            "inline": True
                         }#,
                         #{
                         #    "name": "URL",
@@ -167,6 +252,8 @@ def sendNotification(errMsg):
             notice_regex = "([a-zA-Z ]*): *([^\/]*)in ([\/a-zA-Z._:0-9 ]*)"
 
             notice_result = re.match(notice_regex, body)
+
+            regressionData = handleRegression(error_result.group(2), error_result.group(3))
 
             payload = {
                 "username": "Loggine",
@@ -214,6 +301,11 @@ def sendNotification(errMsg):
                         {
                             "name": "File",
                             "value": notice_result.group(3),
+                            "inline": True
+                        },
+                        {
+                            "name": "Seen before?",
+                            "value": regressionData[3],
                             "inline": True
                         }#,
                         #{
