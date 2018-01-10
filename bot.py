@@ -70,15 +70,17 @@ def handleRegression(errorMsg, file):
 
     saveRegressionDb()
 
-    if fileChangedSinceLastTime and not newFileLine and not isNewMessage:
-        regressionString = "The file has changed since last time, but the error remains"
-    elif not seenFileBefore:
+    if not seenFileBefore:
         regressionString = "This is a new error in a new file"
+    elif not fileChangedSinceLastTime:
+        regressionString = "Seen before"
     elif not isNewMessage:
         if newFileLine:
             regressionString = "This error has been observed before, but on another line"
         else:
             regressionString = "This error has been observed before"
+    elif isNewMessage:
+        regressionString = "This error message is new"
     else:
         regressionString = "Unknown regression state(%s, %s, %s, %s)" % (seenFileBefore, isNewMessage, newFileLine, fileChangedSinceLastTime)
 
