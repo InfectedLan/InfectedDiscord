@@ -173,7 +173,7 @@ def sendNotification(errMsg):
                 # "avatar_url": "",
                 "tts": False,
                 "embeds": [{
-                    "title": ":warning:New log event:warning:",
+                    "title": ":loudspeaker:New log event:loudspeaker:",
                     #"url": entry["url"],
                     # "timestamp": "",
                     # "color": "",
