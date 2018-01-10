@@ -49,7 +49,7 @@ def sendNotification(errMsg):
                 # "avatar_url": "",
                 "tts": False,
                 "embeds": [{
-                    "title": "New log event:warning::warning::warning:",
+                    "title": ":rotating_light:New log event:rotating_light:",
                     #"url": entry["url"],
                     # "timestamp": "",
                     # "color": "",
@@ -111,7 +111,7 @@ def sendNotification(errMsg):
                 # "avatar_url": "",
                 "tts": False,
                 "embeds": [{
-                    "title": "New log event",
+                    "title": ":warning:New log event:warning:",
                     #"url": entry["url"],
                     # "timestamp": "",
                     # "color": "",
