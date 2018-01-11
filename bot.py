@@ -291,7 +291,7 @@ def sendNotification(errMsg):
                                 "value": entry_type,
                                 "inline": True
                             }
-                        ]
+                        ],
                     "description": "```%s```" % body,
                 }]
             }
